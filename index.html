@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Altar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <div class="brand">Altar</div>
+    <nav id="tabs"></nav>
+    <div class="spacer"></div>
+    <button id="btnShot">Save picture</button>
+    <button id="btnClear">Clear</button>
+  </header>
+  <main id="stage">
+    <canvas id="cv"></canvas>
+    <aside id="panel" hidden></aside>
+    <aside id="inspector" hidden></aside>
+    <div id="toast"></div>
+  </main>
+  <footer id="shelf">
+    <nav id="cats"></nav>
+    <div id="items"></div>
+  </footer>
+</div>
+
+<div id="intro">
+  <div class="introbox">
+    <h1>Where will your altar stand?</h1>
+    <p>Choose a place. You can change it, and everything else, at any time.</p>
+    <div id="introCards" class="cards"></div>
+    <div id="introSaved"></div>
+    <p class="small">This is a quiet space for remembering what matters to you. Nothing sacred is drawn for you: statues, pictures and symbols are always the ones you bring.</p>
+  </div>
+</div>
+
+<div id="sigil" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/altar.js"></script>
+<script src="js/scenery.js"></script>
+<script src="js/paint.js"></script>
+<script src="js/objects.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/sigil.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
