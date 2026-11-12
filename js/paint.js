@@ -64,6 +64,44 @@ BUILD.river = (g, o) => {
   flowerBed(g, 0, W, 612, 716, 190, r, ['poppy', 'daisy', 'forget', 'buttercup', 'foxglove', 'iris', 'rose', 'lily']);
   fern(g, 40, 716, 200, .7, ['#1d4a22', '#2f7a38', '#3f9a44', '#56b050'], r); fern(g, 1240, 716, 200, -.7, ['#1d4a22', '#2f7a38', '#3f9a44', '#56b050'], r);
 };
+/* ---------- a red-rock desert: mesas, dunes and saguaros under an open sky ---------- */
+PLACES.desert = { name: 'Desert', count: { label: 'Cacti', min: 0, max: 6, def: 4 }, ambient: { wind: .5, crickets: .15, drone: .2 } };
+function mesa(g, x, base, w, h, col, r) {
+  g.save(); g.beginPath(); g.moveTo(x - w / 2 - h * .4, base); g.lineTo(x - w / 2 - 4, base - h * .5); g.lineTo(x - w / 2 + 8, base - h); g.lineTo(x + w / 2 - 8, base - h); g.lineTo(x + w / 2 + 4, base - h * .5); g.lineTo(x + w / 2 + h * .4, base); g.closePath();
+  g.fillStyle = lg(g, x - w / 2, 0, x + w / 2, 0, [[0, shade(col, .2)], [.55, col], [1, shade(col, -.28)]]); g.fill(); g.clip();
+  for (let i = 1; i < 7; i++) { g.fillStyle = i % 2 ? 'rgba(90,30,20,.16)' : 'rgba(255,220,170,.14)'; g.fillRect(x - w, base - h + h * i / 7 + (r() - .5) * 4, w * 2, 3 + r() * 5); }
+  for (let i = 0; i < 9; i++) { const cx = x - w / 2 + r() * w; g.strokeStyle = 'rgba(70,25,15,.22)'; g.lineWidth = 1 + r() * 2; g.beginPath(); g.moveTo(cx, base - h); g.lineTo(cx + (r() - .5) * 14, base - h * (.3 + r() * .3)); g.stroke(); }
+  g.restore();
+}
+function saguaro(g, x, yb, s, r) {
+  const h = 190 * s, w = 26 * s, arms = [];
+  for (const dir of [-1, 1]) if (r() < .85) arms.push({ dir, y: yb - h * (.32 + r() * .22), out: (30 + r() * 14) * s, up: h * (.24 + r() * .2) });
+  g.fillStyle = 'rgba(70,35,15,.35)'; g.beginPath(); g.ellipse(x + 20 * s, yb, 52 * s, 8 * s, 0, 0, 6.3); g.fill();
+  const limbs = () => { g.beginPath(); arms.forEach(a => { g.moveTo(x, a.y); g.quadraticCurveTo(x + a.dir * a.out, a.y + 4 * s, x + a.dir * a.out, a.y - a.up); }); g.moveTo(x, yb); g.lineTo(x, yb - h); };
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.strokeStyle = '#23492c'; g.lineWidth = w; limbs(); g.stroke();
+  g.save(); g.translate(-w * .14, 0); g.strokeStyle = '#3f7a44'; g.lineWidth = w * .62; limbs(); g.stroke(); g.restore();
+  g.save(); g.translate(-w * .26, 0); g.strokeStyle = 'rgba(150,200,120,.5)'; g.lineWidth = w * .14; limbs(); g.stroke(); g.restore();
+  g.strokeStyle = 'rgba(20,50,25,.4)'; g.lineWidth = Math.max(1, s * 1.2); for (const k of [-.18, .12, .32]) { g.beginPath(); g.moveTo(x + w * k, yb - 3); g.lineTo(x + w * k, yb - h + w * .4); g.stroke(); }
+  if (r() < .7) blossoms(g, x, yb - h - 2 * s, 7 * s, ['#fff6ee', '#f6c8d0', '#f2c230'], 4, r, 3 * s);
+}
+BUILD.desert = (g, o) => {
+  const r = rng(131), hz = 392;
+  g.fillStyle = lg(g, 0, hz - 70, 0, hz + 10, [[0, 'rgba(255,214,170,0)'], [1, 'rgba(255,214,170,.75)']]); g.fillRect(0, hz - 70, W, 80);
+  hills(g, hz - 26, 12, '#b48aa8', 41, .003);
+  [[170, 250, 120, '#b9705a'], [420, 120, 150, '#a85f4e'], [905, 200, 105, '#b0664f'], [1150, 150, 165, '#a0553f']].forEach(m => mesa(g, m[0], hz + 6, m[1], m[2], m[3], r));
+  [[660, 38, 80, '#b97862'], [760, 26, 60, '#ad6c58']].forEach(m => mesa(g, m[0], hz + 4, m[1], m[2], m[3], r));
+  [[hz + 4, 14, '#e9bd84', 51, .004], [448, 22, '#e2a868', 52, .005], [505, 20, '#d9965a', 53, .007], [552, 14, '#d0884e', 54, .009]].forEach(d => {
+    hills(g, d[0], d[1], d[2], d[3], d[4]);
+    g.save(); g.globalCompositeOperation = 'source-atop'; g.fillStyle = lg(g, 0, d[0] - d[1] * 1.5, 0, d[0] + 60, [[0, 'rgba(255,236,190,.45)'], [1, 'rgba(120,50,20,.22)']]); g.fillRect(0, d[0] - d[1] * 1.5, W, 70 + d[1] * 1.5); g.restore();
+  });
+  g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 10) g.lineTo(x, 588 + Math.sin(x * .006 + 2) * 7 + Math.sin(x * .021) * 3); g.lineTo(W, H); g.closePath(); g.fillStyle = lg(g, 0, 580, 0, H, [[0, '#ecc78e'], [.5, '#dba868'], [1, '#b9824a']]); g.fill();
+  g.lineCap = 'round'; for (let i = 0; i < 46; i++) { const y = 596 + Math.pow(i / 46, 1.4) * 120, a = .1 + i / 46 * .16; g.strokeStyle = i % 2 ? `rgba(130,70,30,${a})` : `rgba(255,240,205,${a})`; g.lineWidth = 1 + i / 20; g.beginPath(); for (let x = -20; x <= W + 20; x += 20) { const yy = y + Math.sin(x * .013 + i * 1.3) * (3 + i / 9); x < 0 ? g.moveTo(x, yy) : g.lineTo(x, yy); } g.stroke(); }
+  for (let i = 0; i < 26; i++) { const x = r() * W, y = 600 + r() * 110, s = 3 + (y - 600) / 14; if (Math.abs(x - CX) < 330 && y < 650) continue; g.fillStyle = 'rgba(70,35,15,.3)'; g.beginPath(); g.ellipse(x + s * .5, y + s * .5, s * 1.3, s * .35, 0, 0, 6.3); g.fill(); g.fillStyle = lg(g, x - s, 0, x + s, 0, [[0, '#c9a184'], [1, '#7a5140']]); g.beginPath(); g.ellipse(x, y, s, s * .62, r(), 0, 6.3); g.fill(); }
+  [[120, 628, 1], [1160, 634, 1.08], [262, 606, .7], [1030, 604, .66], [44, 612, .6], [1244, 610, .56]].slice(0, o.count).sort((a, b) => a[1] - b[1]).forEach(c => saguaro(g, c[0], c[1], c[2], r));
+  for (let i = 0; i < 22; i++) { const x = i % 2 ? r() * 300 : 980 + r() * 300, y = 640 + r() * 74, s = 7 + (y - 640) / 7; g.strokeStyle = ['#8a9a5a', '#a8ac6a', '#6f8448'][(r() * 3) | 0]; g.lineWidth = 1.4; for (let k = 0; k < 9; k++) { const a = -Math.PI / 2 + (r() - .5) * 2.2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * s * 2.2, y + Math.sin(a) * s * 2.2); g.stroke(); } }
+  flowerBed(g, 0, 240, 668, 716, 16, r, ['poppy', 'buttercup', 'daisy']); flowerBed(g, 1040, W, 668, 716, 16, r, ['poppy', 'buttercup', 'daisy']);
+};
 const _dyn = dynamicScenery;
 dynamicScenery = function (g, place, t) {
   _dyn(g, place, t);

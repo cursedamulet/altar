@@ -49,7 +49,7 @@ function rebuildAltar(prev) {
     const oh = prev.w / 2, nh = S.altar.w / 2;
     objects().forEach(b => { const p = b.position; if (Math.abs(p.x - CX) <= oh + 10 && b.bounds.max.y < FLOOR - 4) { Body.setPosition(b, { x: CX + (p.x - CX) * nh / oh, y: p.y - (S.altar.h - prev.h) - 8 }); Body.setVelocity(b, { x: 0, y: 0 }); } });
   }
-  wakeAll();
+  wakeAll(); if (cv) fit();
 }
 
 /* ---------- objects ---------- */
@@ -294,7 +294,13 @@ function frame(ts) {
   render(t);
 }
 function fit() {
-  const st = $('#stage'), sw = st.clientWidth, sh = st.clientHeight, k = Math.min(sw / W, sh / H);
+  const app = $('#app'), st = $('#stage'); let k;
+  /* phone held upright: zoom in on the altar (the sides of the scene run off the screen) and give the rest of the screen to the shelf */
+  const narrow = innerWidth < 760 && innerHeight > innerWidth * 1.1; app.classList.toggle('narrow', narrow);
+  if (narrow) {
+    const toph = $('#top').offsetHeight; k = Math.min((app.clientHeight - toph - 170) / H, app.clientWidth / clamp(S.altar.w + 160, 620, W));
+    app.style.gridTemplateRows = `auto ${H * k}px minmax(0,1fr)`; app.style.setProperty('--below', toph + H * k + 6 + 'px');
+  } else { app.style.gridTemplateRows = ''; k = Math.min(st.clientWidth / W, st.clientHeight / H); }
   cv.style.width = W * k + 'px'; cv.style.height = H * k + 'px';
 }
 
