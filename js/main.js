@@ -242,10 +242,7 @@ function render(t) {
   A.setTransform(SC, 0, 0, SC, 0, 0); A.globalCompositeOperation = 'source-over'; A.clearRect(0, 0, W, H);
   if (scenery) A.drawImage(scenery, 0, 0, W, H);
   dynamicScenery(A, S.place, t);
-  /* see-through lettering behind everything, in every place */
-  A.save(); A.font = 'italic 600 104px "Cormorant Garamond", Georgia, serif'; A.textAlign = 'center'; A.textBaseline = 'middle';
-  A.shadowColor = 'rgba(255,240,200,.35)'; A.shadowBlur = 18; A.fillStyle = 'rgba(255,255,255,.2)'; A.fillText('Angel Gabriella', CX, 150);
-  A.shadowBlur = 0; A.lineWidth = 1.2; A.strokeStyle = 'rgba(255,255,255,.28)'; A.strokeText('Angel Gabriella', CX, 150); A.restore();
+  drawLettering(A, S.place, t);
   if (S.place.weather === 'mist') { for (let i = 0; i < 12; i++) { const x = ((i * 233 + t * 9 * (1 + i % 3 * .4)) % (W + 600)) - 300, y = 400 + (i % 5) * 52 + Math.sin(t * .2 + i) * 14; A.globalAlpha = .16; A.drawImage(puff, x - 300, y - 70, 600, 160); } A.globalAlpha = 1; }
   drawBackdrop(A, S.backdrop, t); drawAltar(A, S.altar);
   const objs = objects().sort((a, b) => a.id - b.id), lights = [];
